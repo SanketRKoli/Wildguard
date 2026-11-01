@@ -1,9 +1,0 @@
-# Light install for coding / testing in Codespaces or any small laptop (uses the built-in fake models)
-gradio==5.50.0
-opencv-python-headless
-pillow
-numpy
-pandas
-matplotlib
-requests
-pytest
