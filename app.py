@@ -13,12 +13,14 @@ import pandas as pd
 from wildguard import knowledge, pipeline
 from wildguard.behavior import AROUSAL, BEHAVIOUR_NAMES
 
-try:                                   # present on Hugging Face ZeroGPU Spaces; harmless everywhere else
-    import spaces
-    _gpu = spaces.GPU(duration=120)
-except Exception:
-    def _gpu(fn):
-        return fn
+try:                                   # Hugging Face ZeroGPU Spaces refuse to start unless one @spaces.GPU function exists.
+    import spaces                      # This placeholder is never called, so analyses use the CPU and NO GPU quota.
+
+    @spaces.GPU(duration=1)
+    def _zerogpu_placeholder():
+        return None
+except Exception:                      # normal computers / CPU Spaces: nothing to do
+    pass
 
 
 def warm_up():
@@ -138,14 +140,12 @@ def render(a):
     return summary, species, behaviour_figure(a), (timeline_figure(a) if a.kind == "video" else None), path
 
 
-@_gpu
 def run_image(img):
     if img is None:
         raise gr.Error("Please upload or capture a photo first.")
     return render(pipeline.analyse_image(img))
 
 
-@_gpu
 def run_video(path):
     if not path:
         raise gr.Error("Please upload or record a video first.")
